@@ -1,6 +1,6 @@
-﻿/**
+/**
  * eulerian -- compute an Eulerian trail through a graph iff one exists
- * Copyright (C) 2016  Daniel Haase
+ * Copyright (C) 2016, 2019  Daniel Haase
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,73 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
- *
- * Title:       eulerian
- *
- * Author:      Daniel Haase <prjctntfctn@web.de>
- *
- * Version:     0.2.1
- *
- * Release:     Aug 1, 2016
- *
- * Compilation:	gcc -o eulerian -O3 -Wall -Werror -pedantic eulerian.c
- *
- * Usage:       ./eulerian <input_filename>
- *
- * Description:	Given an input file of specific format describing a graph,
- *              this code computes an Eulerian trail (Eulerian path) through
- *              that graph iff one exists. It is able to detect if there
- *              cannot be such a trail prior to computation to increase
- *              responsiveness of the program.
- *
- *              The input format is as follows:
- *              The first line contains the number of nodes in that graph.
- *              All following lines contain an edge description of the form
- *              "a b". a and b are names (labels) of nodes where there is
- *              an edge from a to b. Node labels are typically numbers and
- *              separated by exactly one space (' ') symbol and end with a
- *              newline ('\n') symbol.
- *              The output format is as follows:
- *              If there is an Eulerian trail in the specified graph a sequence
- *              of node labels separated by exactly one space (' ') are printed
- *              to STDOUT (standard out, unix file descriptor 1) followed by a
- *              newline ('\n') symbol. If there is no trail in that graph a -1
- *              followed by a newline ('\n') is printed to STDOUT.
- *              Warnings and errors are printed to STDERR (file descriptor 2)
- *              occasionally IN ADDITION to the '-1'.
- *
- *              If the node number in the first line of the input file is greater
- *              the the number of different node labels in the following lines it
- *              is assumed that there are nodes of degree 0 (not connected to any
- *              other nodes). In this case there is no Eulerian trail, at all.
- *              Additionally a warning is printed to STDERR.
- *
- * Reliability: This code passed serveral semi-automated tests including tests
- *              for memory leaks. It is able to handle large input files with
- *              hundreds of nodes and thousands of edges efficiently.
- *
- * References:  German (original)
- *                  Eulerkreisproblem/ Algorithmus von Hierholzer
- *                      https://de.wikipedia.org/wiki/Eulerkreisproblem
- *                  Graph-Zusammenhang
- *                      https://de.wikipedia.org/wiki/Zusammenhang_%28Graphentheorie%29
- *                  Tiefensuche
- *                      https://de.wikipedia.org/wiki/Tiefensuche
- *                      http://www2.informatik.hu-berlin.de/~kschmidt/Tiefensuche.pdf
- *                  Algorithmnusbeschreibung
- *                      http://www.zahlendoktor.de/eulerweg_finden.html
- *
- *              English (adopted)
- *                  Eulerian path/ Hierholzer's algorithm
- *                      https://en.wikipedia.org/wiki/Eulerian_path
- *                  Connectivity (Graph theory)
- *                      https://en.wikipedia.org/wiki/Connectivity_(graph_theory)
- *                  Depth First Search (DFS)
- *                      https://en.wikipedia.org/wiki/Depth-first_search
- *
  */
-
+ 
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -146,12 +81,12 @@ typedef struct mc_memcheck
 	int mc_glbl_sum;
 } mc_memcheck_t;
 
-et_graph_t graph;
-mc_memcheck_t mc;
-int initialized = 0, circuit = 0, trail_nodes = 0;
+static et_graph_t graph;
+static mc_memcheck_t mc;
+static int initialized = 0, circuit = 0, trail_nodes = 0;
 
 /* print list of all nodes of the graph (for debugging purpose) */
-void print_node_lst()
+static void print_node_lst(void)
 {
 	et_elem_t *cur = graph.et_node_lst;
 
@@ -168,7 +103,7 @@ void print_node_lst()
 }
 
 /* print adjacency list for all nodes (for debugging purpose) */
-void print_node_adj()
+static void print_node_adj(void)
 {
 	et_elem_t *cur_adj, *cur = graph.et_node_lst;
 
@@ -194,7 +129,7 @@ void print_node_adj()
 }
 
 /* print trail "trail" as sequence of node IDs */
-void et_print_trail(et_trail_t *trail)
+static void et_print_trail(et_trail_t *trail)
 {
 	et_elem_t *cur;
 
@@ -212,7 +147,7 @@ void et_print_trail(et_trail_t *trail)
 }
 
 /* initialize graph data structure */
-void et_init_graph()
+static void et_init_graph(void)
 {
 	if(initialized) return;
 
@@ -225,7 +160,7 @@ void et_init_graph()
 }
 
 /* free memory of all elements of a list "list" */
-void et_clean_list(et_elem_t *list)
+static void et_clean_list(et_elem_t *list)
 {
 	et_elem_t *tmp, *cur = list;
 
@@ -239,7 +174,7 @@ void et_clean_list(et_elem_t *list)
 }
 
 /* free (all) allocated memory */
-void et_clean(et_trail_t *trail, et_trail_t *list)
+static void et_clean(et_trail_t *trail, et_trail_t *list)
 {
 	et_elem_t *cur, *tmp;
 
@@ -272,7 +207,7 @@ void et_clean(et_trail_t *trail, et_trail_t *list)
 }
 
 /* return node of type et_node_t with id "id" from graph's node list */
-et_node_t *et_get_node(int id)
+static et_node_t *et_get_node(int id)
 {
 	et_elem_t *elem = graph.et_node_lst;
 
@@ -286,7 +221,7 @@ et_node_t *et_get_node(int id)
 }
 
 /* add element "elem" to graph */
-void et_add_node(et_elem_t *elem)
+static void et_add_node(et_elem_t *elem)
 {
 	et_elem_t *tmp;
 
@@ -306,7 +241,7 @@ void et_add_node(et_elem_t *elem)
 }
 
 /* add "elem2" to end of adjacency list of "elem1" */
-void et_add_adj(et_elem_t *elem1, et_elem_t *elem2)
+static void et_add_adj(et_elem_t *elem1, et_elem_t *elem2)
 {
 	et_elem_t *tmp;
 
@@ -328,7 +263,7 @@ void et_add_adj(et_elem_t *elem1, et_elem_t *elem2)
 }
 
 /* insert nodes with IDs "n1" and "n2" into graph and update adjacency lists */
-void et_add_edge(int n1, int n2)
+static void et_add_edge(int n1, int n2)
 {
 	et_elem_t *elem_grh1, *elem_grh2, *elem_adj1, *elem_adj2;
 	et_node_t *node1, *node2;
@@ -439,7 +374,7 @@ void et_add_edge(int n1, int n2)
 }
 
 /* parse data from input file and initialize data structures */
-void et_build_graph(char *filename)
+static void et_build_graph(char *filename)
 {
 	FILE *inp;
 	int ret, n1, n2, specified_node_num, edge_num = 0;
@@ -502,7 +437,7 @@ void et_build_graph(char *filename)
 }
 
 /* some kind of "depth first search" */
-void et_dfs(et_elem_t *elem, int *cnt)
+static void et_dfs(et_elem_t *elem, int *cnt)
 {
 	et_elem_t *cur, *odd;
 
@@ -546,7 +481,7 @@ void et_dfs(et_elem_t *elem, int *cnt)
 }
 
 /* verify connectivity of the graph using "depth first search" */
-int et_is_connected()
+static int et_is_connected(void)
 {
 	int cnt = 0;
 
@@ -557,7 +492,7 @@ int et_is_connected()
 }
 
 /* if 0 is returned there's no need to search an Eulerian trail since there isn't one */
-int et_validate_graph()
+static int et_validate_graph(void)
 {
 	et_elem_t *cur_elem = graph.et_node_lst;
 	int num_deg_odd = 0;
@@ -576,7 +511,7 @@ int et_validate_graph()
 }
 
 /* add an element "node" to trail "trail" */
-void et_trail_add_elem(et_trail_t *trail, et_node_t *node)
+static void et_trail_add_elem(et_trail_t *trail, et_node_t *node)
 {
 	et_elem_t *elem;
 
@@ -606,7 +541,7 @@ void et_trail_add_elem(et_trail_t *trail, et_node_t *node)
 }
 
 /* mark an "edge" (between two nodes) as used */
-void et_set_edge_used(et_node_t *node1, et_node_t *node2)
+static void et_set_edge_used(et_node_t *node1, et_node_t *node2)
 {
 	et_elem_t *elem;
 
@@ -641,7 +576,7 @@ void et_set_edge_used(et_node_t *node1, et_node_t *node2)
 }
 
 /* add element "node" to list of start nodes of next sub circuits */
-void et_list_add_elem(et_trail_t *list, et_node_t *node)
+static void et_list_add_elem(et_trail_t *list, et_node_t *node)
 {
 	et_elem_t *cur;
 	int fnd = 0;
@@ -668,7 +603,7 @@ void et_list_add_elem(et_trail_t *list, et_node_t *node)
  * 		precompute trail from one of them ("start") to the other one ("end")
  * else compute sub circuit (start == end)
  */
-et_trail_t *et_sub_circuit(et_node_t *start, et_node_t *end, et_trail_t **list)
+static et_trail_t *et_sub_circuit(et_node_t *start, et_node_t *end, et_trail_t **list)
 {
 	et_trail_t *sub;
 	et_elem_t *cur;
@@ -718,7 +653,7 @@ et_trail_t *et_sub_circuit(et_node_t *start, et_node_t *end, et_trail_t **list)
 }
 
 /* insert sub circuit "sub" into trail "trail" */
-void et_insert_sub_circuit(et_trail_t *trail, et_trail_t *sub)
+static void et_insert_sub_circuit(et_trail_t *trail, et_trail_t *sub)
 {
 	et_elem_t *cur, *tmp;
 
@@ -743,13 +678,13 @@ void et_insert_sub_circuit(et_trail_t *trail, et_trail_t *sub)
 }
 
 /* verify if computed sub circuit is already an Eulerian trail of the whole graph */
-int et_is_trail(et_trail_t *trail)
+static int et_is_trail(et_trail_t *trail)
 {
 	return (trail->et_trail_num >= trail_nodes);
 }
 
 /* compute Eulerian trail that solves the current instance */
-et_trail_t *et_eulerian_trail(et_trail_t **list)
+static et_trail_t *et_eulerian_trail(et_trail_t **list)
 {
 	et_trail_t *trail;
 	et_elem_t *cur;
@@ -782,7 +717,7 @@ et_trail_t *et_eulerian_trail(et_trail_t **list)
 	return trail;
 }
 
-void mc_print_memory_info()
+static void mc_print_memory_info(void)
 {
 	if(!MEMCHECK) return;
 
