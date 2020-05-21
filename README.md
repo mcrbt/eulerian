@@ -1,7 +1,7 @@
 # eulerian
 
 
-### Description
+## Description
 
 Given an input file of specific format describing a graph,
 this code computes a *Eulerian trail* (*Eulerian path*) through
@@ -9,7 +9,7 @@ that graph if and only if one exists. It is able to detect if there
 cannot be such a trail prior to computation to increase the
 responsiveness of the program.
 
-##### Input format
+#### Input format
 The first line contains the number of nodes in the graph.
 All following lines contain an edge description of the form
 "`a b`". `a` and `b` are *labels* of nodes where there is
@@ -17,7 +17,7 @@ an edge from `a` to `b`. Node labels are typically numbers,
 separated by *exactly one* space ('` `') symbol and end with a
 *exactly one* newline ('`\n`') symbol.
 
-##### Output format
+#### Output format
 If there is a *Eulerian trail* in the specified graph, a sequence
 of node labels separated by exactly one space ('` `') is printed
 to `STDOUT` (*standard output stream*, UNIX file descriptor `1`)
@@ -39,21 +39,21 @@ a *loop* at the node denoted with that label. The output will likely
 contain the respective label twice consecutively.
 
 
-### Reliability and performance note
+## Reliability and performance note
 
 This code passed several semi-automated tests including tests
 for memory leaks. It is able to handle large input files with
 hundreds of nodes and thousands of edges efficiently.
 
 
-### References
+## References
 
 * German (original)
     - [Eulerkreisproblem/ Algorithmus von Hierholzer](https://de.wikipedia.org/wiki/Eulerkreisproblem)
     - [Graph-Zusammenhang](https://de.wikipedia.org/wiki/Zusammenhang_%28Graphentheorie%29)
-    - Tiefensuche
-          + [Wikipedia](https://de.wikipedia.org/wiki/Tiefensuche)
-          + [Humboldt-Universität zu Berlin](http://www2.informatik.hu-berlin.de/~kschmidt/Tiefensuche.pdf)
+    - *Tiefensuche*:
+          [Wikipedia](https://de.wikipedia.org/wiki/Tiefensuche),
+          [Humboldt-Universität zu Berlin](http://www2.informatik.hu-berlin.de/~kschmidt/Tiefensuche.pdf)
     - [Algorithmnusbeschreibung](http://www.zahlendoktor.de/eulerweg_finden.html)
 
 * English (adopted)
@@ -62,26 +62,26 @@ hundreds of nodes and thousands of edges efficiently.
     - [Depth-First Search (DFS)](https://en.wikipedia.org/wiki/Depth-first_search)
 
 
-### Examples
+## Examples
 
 An example of a correctly formatted input file representing a graph
-(`1.graph`) and the respective output representing the
-*Eulerian trail* through that graph (`1.trail`) can be found in
+("`1.graph`") and the respective output representing the
+*Eulerian trail* through that graph ("`1.trail`") can be found in
 the `sample` folder.
 
 
-### Copyright notice
+## Copyright notice
 
 Copyright &copy; 2016, 2019 Daniel Haase
 
 `eulerian` is licensed under the **GNU General Public License, version 3**.
 
-Current version: **0.2.2**
 Initial release: **Aug 2016**
 
 
-### License disclaimer
+## License disclaimer
 
+```
 eulerian - compute a Eulerian trail through a graph iff one exists
 Copyright (C) 2016, 2019  Daniel Haase
 
@@ -96,4 +96,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see &lt;[https://www.gnu.org/licenses/gpl-3.0.txt](https://www.gnu.org/licenses/gpl-3.0.txt)&gt;.
+along with this program.
+If not, see &lt;[https://www.gnu.org/licenses/gpl-3.0.txt](https://www.gnu.org/licenses/gpl-3.0.txt)&gt;.
+```
