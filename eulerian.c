@@ -1,5 +1,5 @@
 /**
- * eulerian -- compute an Eulerian trail through a graph iff one exists
+ * eulerian - compute a Eulerian trail through a graph iff one exists
  * Copyright (C) 2016, 2019  Daniel Haase
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -99,7 +99,7 @@ static void print_node_lst(void)
 		cur = cur->et_elem_nxt;
 	}
 
-	printf("\r\n\r\n");
+	printf("\n\n");
 }
 
 /* print adjacency list for all nodes (for debugging purpose) */
@@ -108,7 +108,7 @@ static void print_node_adj(void)
 	et_elem_t *cur_adj, *cur = graph.et_node_lst;
 
 	if(!GRAPH) return;
-	printf("Adjacency lists:\r\n");
+	printf("Adjacency lists:\n");
 
 	while(cur)
 	{
@@ -121,11 +121,11 @@ static void print_node_adj(void)
 			cur_adj = cur_adj->et_elem_nxt;
 		}
 
-		printf("\r\n");
+		printf("\n");
 		cur = cur->et_elem_nxt;
 	}
 
-	printf("\r\n");
+	printf("\n");
 }
 
 /* print trail "trail" as sequence of node IDs */
@@ -142,7 +142,6 @@ static void et_print_trail(et_trail_t *trail)
 		cur = cur->et_elem_nxt;
 	}
 
-	/* here no carriage return as claimed */
 	printf("\n");
 }
 
@@ -200,7 +199,13 @@ static void et_clean(et_trail_t *trail, et_trail_t *list)
 		if(cur->et_elem_node) et_clean_list(cur->et_elem_node->et_adj_lst);
 		tmp = cur;
 		cur = cur->et_elem_nxt;
-		if(tmp->et_elem_node) { free(tmp->et_elem_node); if(MEMCHECK) mc.mc_free_node++; }
+
+		if(tmp->et_elem_node)
+    {
+      free(tmp->et_elem_node);
+      if(MEMCHECK) mc.mc_free_node++;
+    }
+
 		free(tmp);
 		if(MEMCHECK) mc.mc_free_elem++;
 	}
@@ -274,7 +279,7 @@ static void et_add_edge(int n1, int n2)
 	{
 		if((node1 = (et_node_t *)malloc(sizeof(et_node_t))) == NULL)
 		{
-			fprintf(stdout, "Out of memory.\r\n");
+			fprintf(stdout, "Out of memory.\n");
 			et_clean(NULL, NULL);
 			exit(EXIT_FAILURE);
 		}
@@ -283,7 +288,7 @@ static void et_add_edge(int n1, int n2)
 
 		if((elem_grh1 = (et_elem_t *)malloc(sizeof(et_node_t))) == NULL)
 		{
-			fprintf(stderr, "Out of memory.\r\n");
+			fprintf(stderr, "Out of memory.\n");
 			et_clean(NULL, NULL);
 			exit(EXIT_FAILURE);
 		}
@@ -307,7 +312,7 @@ static void et_add_edge(int n1, int n2)
 	{
 		if((node2 = (et_node_t *)malloc(sizeof(et_node_t))) == NULL)
 		{
-			fprintf(stdout, "Out of memory.\r\n");
+			fprintf(stdout, "Out of memory.\n");
 			et_clean(NULL, NULL);
 			exit(EXIT_FAILURE);
 		}
@@ -316,7 +321,7 @@ static void et_add_edge(int n1, int n2)
 
 		if((elem_grh2 = (et_elem_t *)malloc(sizeof(et_node_t))) == NULL)
 		{
-			fprintf(stderr, "Out of memory.\r\n");
+			fprintf(stderr, "Out of memory.\n");
 			et_clean(NULL, NULL);
 			exit(EXIT_FAILURE);
 		}
@@ -335,7 +340,7 @@ static void et_add_edge(int n1, int n2)
 
 	if((elem_adj1 = (et_elem_t *)malloc(sizeof(et_elem_t))) == NULL)
 	{
-		fprintf(stderr, "Out of memory.\r\n");
+		fprintf(stderr, "Out of memory.\n");
 		et_clean(NULL, NULL);
 		exit(EXIT_FAILURE);
 	}
@@ -348,7 +353,7 @@ static void et_add_edge(int n1, int n2)
 
 	if((elem_adj2 = (et_elem_t *)malloc(sizeof(et_elem_t))) == NULL)
 	{
-		fprintf(stderr, "Out of memory.\r\n");
+		fprintf(stderr, "Out of memory.\n");
 		et_clean(NULL, NULL);
 		exit(EXIT_FAILURE);
 	}
@@ -383,13 +388,13 @@ static void et_build_graph(char *filename)
 
 	if((inp = fopen(filename, "r")) == NULL)
 	{
-		fprintf(stderr, "Failed to open file \"%s\".\r\n", filename);
+		fprintf(stderr, "Failed to open file \"%s\".\n", filename);
 		exit(EXIT_FAILURE);
 	}
 
 	if(fscanf(inp, "%d", &ret) != 1)
 	{
-		fprintf(stderr, "Invalid input file format.\r\n");
+		fprintf(stderr, "Invalid input file format.\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -400,7 +405,7 @@ static void et_build_graph(char *filename)
 		if((ret = fscanf(inp, "%d %d", &n1, &n2)) == EOF) break;
 		else if(ret != 2)
 		{
-			fprintf(stderr, "Invalid input file format. (line %d)\r\n", edge_num + 2);
+			fprintf(stderr, "Invalid input file format. (line %d)\n", edge_num + 2);
 			et_clean(NULL, NULL);
 			exit(EXIT_FAILURE);
 		}
@@ -418,9 +423,9 @@ static void et_build_graph(char *filename)
 	{
 		if(specified_node_num != graph.et_node_num)
 		{
-			fprintf(stderr, "Warning, bad node number.\r\n");
-			fprintf(stderr, "%d nodes found although %d nodes specified in first line of input file.\r\n", graph.et_node_num, specified_node_num);
-			printf("\r\n");
+			fprintf(stderr, "Warning, bad node number.\n");
+			fprintf(stderr, "%d nodes found although %d nodes specified in first line of input file.\n", graph.et_node_num, specified_node_num);
+			printf("\n");
 		}
 
 		print_node_lst();
@@ -429,7 +434,7 @@ static void et_build_graph(char *filename)
 
 	if(specified_node_num > graph.et_node_num)
 	{
-		fprintf(stderr, "This instance is not solvable.\r\n");
+		fprintf(stderr, "This instance is not solvable.\n");
 		printf("-1\n");
 		et_clean(NULL, NULL);
 		exit(EXIT_SUCCESS);
@@ -454,7 +459,7 @@ static void et_dfs(et_elem_t *elem, int *cnt)
 		{
 			if((odd = (et_elem_t *)malloc(sizeof(et_elem_t))) == NULL)
 			{
-				fprintf(stderr, "Out of memory.\r\n");
+				fprintf(stderr, "Out of memory.\n");
 				et_clean(NULL, NULL);
 				exit(EXIT_FAILURE);
 			}
@@ -519,7 +524,7 @@ static void et_trail_add_elem(et_trail_t *trail, et_node_t *node)
 
 	if((elem = (et_elem_t *)malloc(sizeof(et_elem_t))) == NULL)
 	{
-		fprintf(stderr, "Out of memory.\r\n");
+		fprintf(stderr, "Out of memory.\n");
 		et_clean(NULL, NULL);
 		exit(EXIT_FAILURE);
 	}
@@ -530,7 +535,8 @@ static void et_trail_add_elem(et_trail_t *trail, et_node_t *node)
 	elem->et_elem_nxt = NULL;
 	elem->et_elem_usd = 0;
 
-	if(!(trail->et_trail_lst)) trail->et_trail_lst = trail->et_trail_cur = elem;
+	if(!(trail->et_trail_lst))
+    trail->et_trail_lst = trail->et_trail_cur = elem;
 	else
 	{
 		trail->et_trail_cur->et_elem_nxt = elem;
@@ -587,7 +593,12 @@ static void et_list_add_elem(et_trail_t *list, et_node_t *node)
 
 		while(cur)
 		{
-			if(cur->et_elem_node->et_id == node->et_id) { fnd = 1; break; }
+			if(cur->et_elem_node->et_id == node->et_id)
+      {
+        fnd = 1;
+        break;
+      }
+
 			cur = cur->et_elem_nxt;
 		}
 
@@ -614,7 +625,7 @@ static et_trail_t *et_sub_circuit(et_node_t *start, et_node_t *end, et_trail_t *
 
 	if((sub = (et_trail_t *)malloc(sizeof(et_trail_t))) == NULL)
 	{
-		fprintf(stderr, "Out of memory.\r\n");
+		fprintf(stderr, "Out of memory.\n");
 		et_clean(NULL, *list);
 		exit(EXIT_FAILURE);
 	}
@@ -663,7 +674,8 @@ static void et_insert_sub_circuit(et_trail_t *trail, et_trail_t *sub)
 
 	while(cur)
 	{
-		if(cur->et_elem_node->et_id == sub->et_trail_lst->et_elem_node->et_id) break;
+		if(cur->et_elem_node->et_id == sub->et_trail_lst->et_elem_node->et_id)
+      break;
 		cur = cur->et_elem_nxt;
 	}
 
@@ -674,7 +686,12 @@ static void et_insert_sub_circuit(et_trail_t *trail, et_trail_t *sub)
 	trail->et_trail_num += ((sub->et_trail_num) - 1);
 	free(sub->et_trail_lst);
 	free(sub);
-	if(MEMCHECK) { mc.mc_free_elem++; mc.mc_free_trail++; }
+
+	if(MEMCHECK)
+  {
+    mc.mc_free_elem++;
+    mc.mc_free_trail++;
+  }
 }
 
 /* verify if computed sub circuit is already an Eulerian trail of the whole graph */
@@ -691,7 +708,7 @@ static et_trail_t *et_eulerian_trail(et_trail_t **list)
 
 	if((*list = (et_trail_t *)malloc(sizeof(et_trail_t))) == NULL)
 	{
-		fprintf(stderr, "Out of memory.\r\n");
+		fprintf(stderr, "Out of memory.\n");
 		et_clean(NULL, NULL);
 		exit(EXIT_FAILURE);
 	}
@@ -701,8 +718,12 @@ static et_trail_t *et_eulerian_trail(et_trail_t **list)
 	(*list)->et_trail_lst = (*list)->et_trail_cur = NULL;
 	(*list)->et_trail_num = 0;
 
-	if(circuit) trail = et_sub_circuit(graph.et_node_lst->et_elem_node, NULL, list);
-	else trail = et_sub_circuit(graph.et_odd_nodes->et_elem_node, graph.et_odd_nodes->et_elem_nxt->et_elem_node, list);
+	if(circuit)
+    trail = et_sub_circuit(graph.et_node_lst->et_elem_node,
+      NULL, list);
+	else
+    trail = et_sub_circuit(graph.et_odd_nodes->et_elem_node,
+      graph.et_odd_nodes->et_elem_nxt->et_elem_node, list);
 
 	if(et_is_trail(trail)) return trail;
 	cur = (*list)->et_trail_lst;
@@ -710,7 +731,8 @@ static et_trail_t *et_eulerian_trail(et_trail_t **list)
 	while(cur)
 	{
 		if(et_is_trail(trail)) break;
-		et_insert_sub_circuit(trail, et_sub_circuit(cur->et_elem_node, NULL, list));
+		et_insert_sub_circuit(trail,
+      et_sub_circuit(cur->et_elem_node, NULL, list));
 		cur = cur->et_elem_nxt;
 	}
 
@@ -725,16 +747,16 @@ static void mc_print_memory_info(void)
 	mc.mc_free_sum = mc.mc_free_node + mc.mc_free_elem + mc.mc_free_trail;
 	mc.mc_glbl_sum = mc.mc_malloc_sum - mc.mc_free_sum;
 
-	printf("\r\nMemory allocation information:\r\n\r\n");
-	printf("\tNodes allocated:       %d\r\n", mc.mc_malloc_node);
-	printf("\tNodes freed:           %d\r\n\r\n", mc.mc_free_node);
-	printf("\tElements allocated:    %d\r\n", mc.mc_malloc_elem);
-	printf("\tElements freed:        %d\r\n\r\n", mc.mc_free_elem);
-	printf("\tTrails allocated:      %d\r\n", mc.mc_malloc_trail);
-	printf("\tTrails freed:          %d\r\n\r\n", mc.mc_free_trail);
-	printf("\tCumulated allocations: %d\r\n", mc.mc_malloc_sum);
-	printf("\tCumulated frees:       %d\r\n\r\n", mc.mc_free_sum);
-	printf("\tSystem balance:        %d\r\n\r\n", mc.mc_glbl_sum);
+	printf("\nMemory allocation information:\n\n");
+	printf("\tNodes allocated:       %d\n", mc.mc_malloc_node);
+	printf("\tNodes freed:           %d\n\n", mc.mc_free_node);
+	printf("\tElements allocated:    %d\n", mc.mc_malloc_elem);
+	printf("\tElements freed:        %d\n\n", mc.mc_free_elem);
+	printf("\tTrails allocated:      %d\n", mc.mc_malloc_trail);
+	printf("\tTrails freed:          %d\n\n", mc.mc_free_trail);
+	printf("\tCumulated allocations: %d\n", mc.mc_malloc_sum);
+	printf("\tCumulated frees:       %d\n\n", mc.mc_free_sum);
+	printf("\tSystem balance:        %d\n\n", mc.mc_glbl_sum);
 }
 
 int main(int argc, char **argv)
@@ -754,7 +776,7 @@ int main(int argc, char **argv)
 
 	if(argc != 2)
 	{
-		printf("Usage: ./eulerian <filename>\r\n");
+		printf("Usage: ./eulerian <filename>\n");
 		return 0;
 	}
 	else et_build_graph(argv[1]);
@@ -764,7 +786,11 @@ int main(int argc, char **argv)
 		trail = et_eulerian_trail(&list);
 		et_print_trail(trail);
 	}
-	else { printf("-1\n"); fprintf(stderr, "This instance is not solvable.\r\n"); }
+	else
+  {
+    printf("-1\n");
+    fprintf(stderr, "This instance is not solvable.\n");
+  }
 
 	et_clean(trail, list);
 	mc_print_memory_info();
