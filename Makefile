@@ -1,24 +1,19 @@
-OUT = eulerian
+NAME = eulerian
+VERSION = 0.2.2
 CC = gcc
 CSTD = -ansi
-GCCW = -Wall -Werror -Wextra -Wunused -Wstrict-prototypes \
+ARCH = 64
+WARN = -Wall -Werror -Wextra -Wunused -Wstrict-prototypes \
 	-pedantic -pedantic-errors
-CFLAGS = -m64 -O3 $(CSTD) $(GCCW)
-LDFLAGS = 
-VERSION = 0.2.2
-objects = $(OUT).o
+CFLAGS = -m$(ARCH) -O3 $(CSTD) $(WARN)
 
-all: $(OUT)
+all: $(NAME)
 
-$(OUT): $(objects)
-	$(CC) -o $@ $(LDFLAGS) $^
-
-$(OUT).o: $(OUT).c
-	$(CC) -c $(CFLAGS) $<
+$(NAME): $(NAME).c
+	$(CC) -o $@ $(CFLAGS) $<
 
 clean:
-	rm -f $(OUT) *.o *~ core.*
+	rm -f $(NAME) *.o *~ core.*
 
 pack:
-	tar cJf eulerian_$(VERSION)_src.txz eulerian.c Makefile LICENSE README
-
+	tar czf eulerian_$(VERSION).tgz $(NAME).c Makefile LICENSE README.md
