@@ -39,6 +39,14 @@ a *loop* at the node denoted with that label. The output will likely
 contain the respective label twice consecutively.
 
 
+## Compatibility
+
+`eulerian` is written in plain ANSI C and has no dependencies.
+
+It is cross platform compatible and compiles at least under
+Linux, Solaris, MacOS, and Windows.
+
+
 ## Reliability and performance note
 
 This code passed several semi-automated tests including tests
