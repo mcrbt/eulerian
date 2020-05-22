@@ -7,6 +7,8 @@ WARN = -Wall -Werror -Wextra -Wunused -Wstrict-prototypes \
 	-pedantic -pedantic-errors
 CFLAGS = -m$(ARCH) -O3 $(CSTD) $(WARN)
 
+.PHONY: all clean pack
+
 all: $(NAME)
 
 $(NAME): $(NAME).c
@@ -16,4 +18,4 @@ clean:
 	rm -f $(NAME) *.o *~ core.*
 
 pack:
-	tar czf eulerian_$(VERSION).tgz $(NAME).c Makefile LICENSE README.md
+	tar czf $(NAME)_$(VERSION).tgz $(NAME).c Makefile LICENSE README.md
